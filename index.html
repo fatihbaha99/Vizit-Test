@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vizit Medical Quiz Generator</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 id="app-title">Vizit Medical Quiz Generator</h1>
+            <p id="app-subtitle" class="subtitle">AI-powered medical quiz with 7 options</p>
+        </header>
+
+        <div id="setup-screen" class="screen">
+            <div class="card">
+                <div class="lang-toggle">
+                    <button id="lang-en" class="lang-btn active" onclick="switchLang('en')">🇬🇧 English</button>
+                    <button id="lang-tr" class="lang-btn" onclick="switchLang('tr')">🇹🇷 Türkçe</button>
+                </div>
+
+                <p id="intro-text" class="intro-text">This tool generates AI-powered medical quiz questions. Select your preferences below and click "Generate Questions" to start.</p>
+
+                <h2 id="setup-title">Configure Your Quiz</h2>
+                <form id="quiz-form">
+                    <div class="form-group">
+                        <label for="api-type" id="label-api-type">AI Model</label>
+                        <select id="api-type" name="api-type"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="question-type" id="label-question-type">Question Type</label>
+                        <select id="question-type" name="question-type"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category" id="label-category">Category</label>
+                        <select id="category" name="category"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="topic" id="label-topic">Specific Topic (Optional)</label>
+                        <input type="text" id="topic" name="topic" placeholder="e.g., malnutrition, heart failure, diabetes...">
+                        <small class="hint-text" id="hint-topic">Leave empty for general category questions</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="difficulty" id="label-difficulty">Difficulty</label>
+                        <select id="difficulty" name="difficulty"></select>
+                        <small id="difficulty-description" class="hint-text"></small>
+                    </div>
+
+                    <div class="form-group" id="count-group">
+                        <label for="count" id="label-count">Number of Questions (1-20)</label>
+                        <input type="number" id="count" name="count" min="1" max="20" value="5">
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="btn-generate">Generate Questions</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="loading-screen" class="screen hidden">
+            <div class="card">
+                <div class="spinner"></div>
+                <p id="loading-text">Generating medical questions...</p>
+                <p class="hint" id="loading-hint">This may take a few seconds</p>
+            </div>
+        </div>
+
+        <div id="quiz-screen" class="screen hidden">
+            <div class="quiz-header">
+                <div class="progress-info">
+                    <span id="question-number">Question 1 of 5</span>
+                    <span id="score-display">Score: 0</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="question-meta">
+                    <span id="question-category" class="tag"></span>
+                    <span id="question-difficulty" class="tag"></span>
+                </div>
+
+                <h3 id="question-text" class="question-text"></h3>
+
+                <div id="options-container" class="options-grid"></div>
+
+                <div id="feedback" class="feedback hidden">
+                    <div id="feedback-content"></div>
+                </div>
+
+                <div class="quiz-actions">
+                    <button id="prev-btn" class="btn-secondary hidden">Previous Question</button>
+                    <button id="next-btn" class="btn-primary hidden">Next Question</button>
+                    <button id="finish-btn" class="btn-secondary hidden">View Results</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="case-screen" class="screen hidden">
+            <div class="quiz-header">
+                <div class="progress-info">
+                    <span id="case-title-header"></span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="case-header">
+                    <h2 id="case-title"></h2>
+                    <div class="case-meta">
+                        <span id="case-category" class="tag"></span>
+                        <span id="case-difficulty" class="tag"></span>
+                    </div>
+                </div>
+
+                <div class="case-content">
+                    <div class="case-section">
+                        <h4 id="section-patient">Patient Information</h4>
+                        <p id="case-patient"></p>
+                    </div>
+                    <div class="case-section">
+                        <h4 id="section-complaint">Chief Complaint</h4>
+                        <p id="case-complaint"></p>
+                    </div>
+                    <div class="case-section">
+                        <h4 id="section-history">History of Present Illness</h4>
+                        <p id="case-history"></p>
+                    </div>
+                    <div class="case-section">
+                        <h4 id="section-physical">Physical Examination</h4>
+                        <p id="case-physical"></p>
+                    </div>
+                    <div class="case-section">
+                        <h4 id="section-labs">Laboratory Results</h4>
+                        <div id="case-labs"></div>
+                    </div>
+                    <div class="case-section" id="imaging-section">
+                        <h4 id="section-imaging">Imaging</h4>
+                        <p id="case-imaging"></p>
+                    </div>
+                </div>
+
+                <div id="case-chat-container">
+                    <div id="case-chat-messages"></div>
+                    <div id="case-chat-input-area">
+                        <textarea id="case-chat-input" rows="2" placeholder="Ask about the case..."></textarea>
+                        <button id="case-chat-send" class="btn-primary">↵</button>
+                    </div>
+                </div>
+
+                <div class="quiz-actions">
+                    <button id="case-finish-btn" class="btn-secondary">Finish Case</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="results-screen" class="screen hidden">
+            <div class="card">
+                <h2 id="results-title">Quiz Results</h2>
+                <div class="score-display">
+                    <div id="final-score" class="score-circle"></div>
+                    <p id="score-text"></p>
+                </div>
+                <div id="answers-review" class="answers-review"></div>
+                <button id="restart-btn" class="btn-primary">Start New Quiz</button>
+            </div>
+        </div>
+
+        <div id="case-results-screen" class="screen hidden">
+            <div class="card">
+                <h2 id="case-results-title">Case Study Results</h2>
+                <div class="score-display">
+                    <div id="case-final-score" class="score-circle"></div>
+                    <p id="case-score-text"></p>
+                </div>
+                <div id="case-answers-review" class="answers-review"></div>
+                <button id="case-restart-btn" class="btn-primary">Start New Case</button>
+            </div>
+        </div>
+
+        <div id="error-screen" class="screen hidden">
+            <div class="card">
+                <h2 id="error-title">Error</h2>
+                <p id="error-message"></p>
+                <button onclick="location.reload()" class="btn-primary" id="btn-try-again">Try Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
