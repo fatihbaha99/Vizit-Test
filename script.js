@@ -1,3 +1,5 @@
+const API_BASE = 'http://3.122.83.90:5000';
+
 let currentQuestionIndex = 0;
 let totalQuestions = 0;
 let questions = [];
@@ -264,7 +266,7 @@ function updateDifficultyDesc() {
 async function switchLang(newLang) {
     if (newLang === currentLang) return;
     try {
-        await fetch('/set-lang', {
+        await fetch(`${API_BASE}/set-lang`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ lang: newLang })
@@ -279,7 +281,7 @@ async function switchLang(newLang) {
 // Init: fetch config on page load
 (async function init() {
     try {
-        const resp = await fetch('/config');
+        const resp = await fetch(`${API_BASE}/config`);
         configData = await resp.json();
         currentLang = configData.lang || 'en';
         translateUI();
@@ -322,7 +324,7 @@ document.getElementById('quiz-form').addEventListener('submit', async (e) => {
     showScreen('loading');
 
     try {
-        const response = await fetch('/generate', {
+        const response = await fetch(`${API_BASE}/generate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -491,7 +493,7 @@ async function selectAnswer(letter, btn) {
     const optionBtns = document.querySelectorAll('.option-btn');
 
     try {
-        const response = await fetch('/answer', {
+        const response = await fetch(`${API_BASE}/answer`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -607,7 +609,7 @@ document.getElementById('prev-btn').addEventListener('click', () => {
 document.getElementById('finish-btn').addEventListener('click', async () => {
     const tr = LANG[currentLang] || LANG.en;
     try {
-        const response = await fetch('/results');
+        const response = await fetch(`${API_BASE}/results`);
         const data = await response.json();
 
         document.getElementById('final-score').textContent = `${data.score}/${data.total}`;
@@ -700,7 +702,7 @@ function showCaseStudy(caseData) {
 
     setTimeout(async () => {
         try {
-            const response = await fetch('/case/chat', {
+            const response = await fetch(`${API_BASE}/case/chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: tr.startDiscussion, lang: currentLang })
@@ -739,7 +741,7 @@ document.getElementById('case-chat-send').addEventListener('click', async () => 
     document.getElementById('case-chat-send').disabled = true;
 
     try {
-        const response = await fetch('/case/chat', {
+        const response = await fetch(`${API_BASE}/case/chat`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ message, lang: currentLang })
@@ -769,7 +771,7 @@ document.getElementById('case-chat-input').addEventListener('keydown', (e) => {
 
 document.getElementById('case-finish-btn').addEventListener('click', async () => {
     try {
-        await fetch('/reset', { method: 'POST' });
+        await fetch(`${API_BASE}/reset`, { method: 'POST' });
         caseData = null;
         currentCaseIndex = 0;
         caseChatHistory = [];
@@ -782,7 +784,7 @@ document.getElementById('case-finish-btn').addEventListener('click', async () =>
 
 document.getElementById('restart-btn').addEventListener('click', async () => {
     try {
-        await fetch('/reset', { method: 'POST' });
+        await fetch(`${API_BASE}/reset`, { method: 'POST' });
         questions = [];
         currentQuestionIndex = 0;
         totalQuestions = 0;
@@ -798,7 +800,7 @@ document.getElementById('restart-btn').addEventListener('click', async () => {
 
 document.getElementById('case-restart-btn').addEventListener('click', async () => {
     try {
-        await fetch('/reset', { method: 'POST' });
+        await fetch(`${API_BASE}/reset`, { method: 'POST' });
         caseData = null;
         currentCaseIndex = 0;
         caseFollowups = [];
